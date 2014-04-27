@@ -24,7 +24,7 @@ public class AppletMain extends Applet implements KeyListener {
 	}
 
 	@Override
-	public void init () {
+	public void init() {
 		super.init();
 		this.setSize(terminal.getWidth() + 20, terminal.getHeight() + 20);
 	}
