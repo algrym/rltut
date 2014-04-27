@@ -1,6 +1,8 @@
 package rltut.screens;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import rltut.Creature;
 import rltut.CreatureFactory;
@@ -13,10 +15,12 @@ public class PlayScreen implements Screen {
 	private Creature player;
 	private final int screenWidth;
 	private final int screenHeight;
+	private final List<String> messages;
 
 	public PlayScreen() {
 		screenWidth = 80;
-		screenHeight = 21;
+		screenHeight = 23;
+		messages = new ArrayList<String>();
 		createWorld();
 
 		CreatureFactory creatureFactory = new CreatureFactory(world);
@@ -24,7 +28,7 @@ public class PlayScreen implements Screen {
 	}
 
 	private void createCreatures(CreatureFactory creatureFactory) {
-		player = creatureFactory.newPlayer();
+		player = creatureFactory.newPlayer(messages);
 
 		for (int i = 0; i < 8; i++) {
 			creatureFactory.newFungus();
@@ -38,14 +42,14 @@ public class PlayScreen implements Screen {
 	public int getScrollX() {
 		return Math.max(
 				0,
-				Math.min(player.x - screenWidth / 2, world.getWidth()
+				Math.min(player.x - screenWidth / 2, world.width()
 						- screenWidth));
 	}
 
 	public int getScrollY() {
 		return Math.max(
 				0,
-				Math.min(player.y - screenHeight / 2, world.getHeight()
+				Math.min(player.y - screenHeight / 2, world.height()
 						- screenHeight));
 	}
 
@@ -55,9 +59,22 @@ public class PlayScreen implements Screen {
 		int top = getScrollY();
 
 		displayTiles(terminal, left, top);
+		displayMessages(terminal, messages);
 
 		terminal.writeCenter("-- press [escape] to lose or [enter] to win --",
-				22);
+				23);
+
+		String stats = String
+				.format(" %3d/%3d hp", player.hp(), player.maxHp());
+		terminal.write(stats, 1, 23);
+	}
+
+	private void displayMessages(AsciiPanel terminal, List<String> messages) {
+		int top = screenHeight - messages.size();
+		for (int i = 0; i < messages.size(); i++) {
+			terminal.writeCenter(messages.get(i), top + i);
+		}
+		messages.clear();
 	}
 
 	private void displayTiles(AsciiPanel terminal, int left, int top) {
@@ -68,8 +85,8 @@ public class PlayScreen implements Screen {
 
 				Creature creature = world.creature(wx, wy);
 				if (creature != null)
-					terminal.write(creature.getGlyph(), creature.x - left,
-							creature.y - top, creature.getColor());
+					terminal.write(creature.glyph(), creature.x - left,
+							creature.y - top, creature.color());
 				else
 					terminal.write(world.glyph(wx, wy), x, y,
 							world.color(wx, wy));

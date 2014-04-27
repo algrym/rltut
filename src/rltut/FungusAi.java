@@ -11,7 +11,7 @@ public class FungusAi extends CreatureAi {
 
 	@Override
 	public void onUpdate() {
-		if (spreadcount < 5 && Math.random() < 0.02)
+		if (spreadcount < 5 && Math.random() < 0.01)
 			spread();
 	}
 
@@ -21,6 +21,8 @@ public class FungusAi extends CreatureAi {
 
 		if (!creature.canEnter(x, y))
 			return;
+
+		creature.doAction("spawn a child");
 
 		Creature child = factory.newFungus();
 		child.x = x;
